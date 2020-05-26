@@ -20,12 +20,19 @@
             "type": "shell",
             "command": "ssh ${config:remote_debug_user}@${config:remote_debug_host} \"sudo dlv debug ~/go/src/hkcam/cmd/hkcam/main.go --headless --listen=:2345 --log --api-version=2 > output.txt 2>&1 &\"",
             "dependsOn": "resetRemoteHostAndDeploy"
+        },   
+        {
+            "label": "waitForDebugger",
+            "type": "shell",
+            "command": "ssh ${config:remote_debug_user}@${config:remote_debug_host} \"( tail -f -n0 output.txt & ) | grep -q 'API server listening at'\"",
         },        
         {
             "label": "launch",
             "type": "shell",
-            "command": "sleep 1",
-            "dependsOn": "deployAndLaunch"
+            "dependsOn": [
+                "deployAndLaunch",
+                "waitForDebugger"
+            ]
         }
     ]
 }
