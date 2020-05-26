@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    
+    "tasks": [
+        {
+            "label": "killDelveProcesses",
+            "type": "shell",
+            "command": "ssh ${config:remote_debug_user}@${config:remote_debug_host} \"sudo pkill -9 dlv || true\"",
+        },
+        {
+            "label": "resetRemoteHostAndDeploy",
+            "type": "shell",
+            "command": "rsync -avz -e ssh ${workspaceFolder}/* ${config:remote_debug_user}@${config:remote_debug_host}:~/go/src/hkcam/",
+            "dependsOn": "killDelveProcesses"
+        },
+        {
+            "label": "deployAndLaunch",
+            "type": "shell",
+            "command": "ssh ${config:remote_debug_user}@${config:remote_debug_host} \"sudo dlv debug ~/go/src/hkcam/cmd/hkcam/main.go --headless --listen=:2345 --log --api-version=2 > output.txt 2>&1 &\"",
+            "dependsOn": "resetRemoteHostAndDeploy"
+        },        
+        {
+            "label": "launch",
+            "type": "shell",
+            "command": "sleep 1",
+            "dependsOn": "deployAndLaunch"
+        }
+    ]
+}

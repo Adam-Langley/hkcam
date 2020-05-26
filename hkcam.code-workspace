@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"remote_debug_host": "10.0.1.186",
+		"remote_debug_user": "ubuntu",
+	}
+}
